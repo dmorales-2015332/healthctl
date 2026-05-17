@@ -59,6 +59,25 @@ public class HealthCheckExporter {
         }
     }
 
+    /**
+     * Exports only results matching the given status to the writer.
+     *
+     * @param results  the full list of health check results
+     * @param status   the status to filter by
+     * @param writer   the output writer
+     * @throws IOException if writing fails
+     */
+    public void exportFiltered(List<HealthCheckResult> results, HealthCheckResult.Status status, Writer writer) throws IOException {
+        if (results == null) throw new IllegalArgumentException("Results must not be null");
+        if (status == null) throw new IllegalArgumentException("Status must not be null");
+        if (writer == null) throw new IllegalArgumentException("Writer must not be null");
+
+        List<HealthCheckResult> filtered = results.stream()
+                .filter(r -> status.equals(r.getStatus()))
+                .toList();
+        export(filtered, writer);
+    }
+
     private String escape(String value) {
         if (value == null) return "";
         return value.replace("\\", "\\\\").replace("\"", "\\\"");
