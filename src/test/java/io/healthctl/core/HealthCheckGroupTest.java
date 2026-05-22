@@ -58,6 +58,13 @@ class HealthCheckGroupTest {
     }
 
     @Test
+    void removeCheck_shouldReturnFalseWhenCheckNotPresent() {
+        HealthCheck check = mock(HealthCheck.class);
+        assertFalse(group.removeCheck(check));
+        assertEquals(0, group.size());
+    }
+
+    @Test
     void getChecks_shouldReturnUnmodifiableList() {
         HealthCheck check = mock(HealthCheck.class);
         group.addCheck(check);
