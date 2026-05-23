@@ -48,6 +48,24 @@ public class RetryExecutor {
                 String.format("All %d attempts failed", policy.getMaxAttempts()), lastException);
     }
 
+    /**
+     * Executes the given task with retry semantics, wrapping any {@link RetryExhaustedException}
+     * and returning the provided fallback value instead of propagating the exception.
+     *
+     * @param task     the callable to execute
+     * @param fallback the value to return if all attempts fail
+     * @param <T>      return type
+     * @return result of the callable, or {@code fallback} if all attempts fail
+     */
+    public <T> T executeWithFallback(Callable<T> task, T fallback) {
+        try {
+            return execute(task);
+        } catch (RetryExhaustedException e) {
+            LOG.log(Level.WARNING, "All attempts exhausted, returning fallback value", e);
+            return fallback;
+        }
+    }
+
     private void sleep(long ms) {
         if (ms <= 0) return;
         try {
