@@ -74,16 +74,37 @@ public class HealthCheckConfigLoader {
 
     private List<String> parseTags(String raw) {
         if (raw == null || raw.isBlank()) return List.of();
-        return Arrays.stream(raw.split(",")).map(String::trim).filter(s -> !s.isEmpty()).toList();
+        return Arrays.stream(raw.split(","))
+                .map(String::trim)
+                .filter(tag -> !tag.isEmpty())
+                .toList();
     }
 
+    /**
+     * Parses an integer from a string, returning the given default value if the
+     * string is null, blank, or not a valid integer.
+     */
     private int parseInt(String value, int defaultValue) {
-        try { return value != null ? Integer.parseInt(value.trim()) : defaultValue; }
-        catch (NumberFormatException e) { return defaultValue; }
+        if (value == null || value.isBlank()) return defaultValue;
+        try {
+            return Integer.parseInt(value.trim());
+        } catch (NumberFormatException e) {
+            LOG.warning("Invalid integer value '" + value + "', using default: " + defaultValue);
+            return defaultValue;
+        }
     }
 
+    /**
+     * Parses a long from a string, returning the given default value if the
+     * string is null, blank, or not a valid long.
+     */
     private long parseLong(String value, long defaultValue) {
-        try { return value != null ? Long.parseLong(value.trim()) : defaultValue; }
-        catch (NumberFormatException e) { return defaultValue; }
+        if (value == null || value.isBlank()) return defaultValue;
+        try {
+            return Long.parseLong(value.trim());
+        } catch (NumberFormatException e) {
+            LOG.warning("Invalid long value '" + value + "', using default: " + defaultValue);
+            return defaultValue;
+        }
     }
 }
