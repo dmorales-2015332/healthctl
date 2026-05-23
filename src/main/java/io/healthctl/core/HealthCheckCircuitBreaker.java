@@ -61,6 +61,20 @@ public class HealthCheckCircuitBreaker {
     public int getFailureCount() { return failureCount.get(); }
     public String getServiceName() { return serviceName; }
 
+    /**
+     * Returns the remaining time in milliseconds before an OPEN circuit transitions
+     * to HALF_OPEN, or 0 if the circuit is not currently OPEN or the timeout has
+     * already elapsed.
+     */
+    public long getRemainingOpenMillis() {
+        if (state.get() != State.OPEN || openedAt == null) {
+            return 0L;
+        }
+        long elapsed = Instant.now().toEpochMilli() - openedAt.toEpochMilli();
+        long remaining = resetTimeoutMillis - elapsed;
+        return Math.max(0L, remaining);
+    }
+
     public void reset() {
         failureCount.set(0);
         state.set(State.CLOSED);
